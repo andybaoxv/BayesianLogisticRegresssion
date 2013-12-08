@@ -46,17 +46,26 @@ flag_ratio = np.infty
 t0 = time()
 while n_iter<max_iter and flag_ratio>tol:
     n_iter += 1
-    lambda_1_old = copy.deepcopy(lambda_1)
-    lambda_0,lambda_1 = update_global(m_0,S_0,label,data,var_local)
     S_N = -0.5*np.linalg.inv(lambda_1)
     m_N = np.dot(S_N,lambda_0)
     tp = S_N+m_N.reshape(n_features,1)*m_N.reshape(1,n_features)
+    cnt = 0
     for n in range(n_instances):
-        ks = np.dot(np.dot(data[n,:],tp),data[n,:])
-        if ks >= 0:
+        ks = np.dot(np.dot(data[[n],:],tp),data[[n],:].T)
+        if ks[0,0] >= 0:
             var_local[n] = np.sqrt(ks)
         else:
-            var_local[n] = 0.1
+            var_local[n] = 1e-6
+            cnt += 1
+    print cnt
+
+    # Store the old values of lambda_0 and lambda_1
+    lambda_1_old = copy.deepcopy(lambda_1)
+
+    # Update the current estimate of the global parameters
+    lambda_0,lambda_1 = update_global(m_0,S_0,label,data,var_local)
+
+    # Compute statistic to determine convergence
     flag_ratio = np.linalg.norm(lambda_1-lambda_1_old)/\
             np.linalg.norm(lambda_1_old)
 t1 = time()
