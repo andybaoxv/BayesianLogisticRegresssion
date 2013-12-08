@@ -1,3 +1,7 @@
+"""This script apply Bayesian logistic regression described in Bishop's book
+"""
+print __doc__
+
 import numpy as np
 import pickle
 from sklearn.linear_model import LogisticRegression
@@ -34,7 +38,7 @@ for n in range(n_instances):
     var_local[n] = np.linalg.norm(data[n,:])
 
 n_iter = 0
-max_iter = 10000
+max_iter = 500
 tol = 0.0001
 flag_ratio = np.infty
 
@@ -42,9 +46,7 @@ flag_ratio = np.infty
 t0 = time()
 while n_iter<max_iter and flag_ratio>tol:
     n_iter += 1
-    lambda_0_old = np.zeros((n_features,1))
-    for i in range(n_features):
-        lambda_0_old[i,0] = lambda_0_old[i,0]
+    lambda_1_old = copy.deepcopy(lambda_1)
     lambda_0,lambda_1 = update_global(m_0,S_0,label,data,var_local)
     S_N = -0.5*np.linalg.inv(lambda_1)
     m_N = np.dot(S_N,lambda_0)
@@ -55,12 +57,10 @@ while n_iter<max_iter and flag_ratio>tol:
             var_local[n] = np.sqrt(ks)
         else:
             var_local[n] = 0.1
-    if np.linalg.norm(lambda_0_old) != 0:
-        flag_ratio = np.linalg.norm(lambda_0-lambda_0_old)
-    else:
-        flag_ratio = np.infty
+    flag_ratio = np.linalg.norm(lambda_1-lambda_1_old)/\
+            np.linalg.norm(lambda_1_old)
 t1 = time()
-print "RunningTime",(t1-t0)/60
 print m_N
+print "RunningTime",(t1-t0)
 
 
