@@ -38,7 +38,7 @@ lambda_1 = -0.5*np.eye(n_features)
 
 # Step 3: Iteration
 n_iter = 0
-max_iter = 10000
+max_iter = 1e6
 tol = 0.0001
 flag_ratio = np.infty
 
@@ -68,10 +68,13 @@ while n_iter<max_iter and flag_ratio>tol:
     # Store the old values of lambda_0 and lambda_1
     lambda_0_old = copy.copy(lambda_0)
     lambda_1_old = copy.copy(lambda_1)
-
+    
+    # Set updated rate
+    rate = 1./(n_iter)
+    
     # Update the current estimate of the global variational parameters
-    lambda_0 = (1.-1./n_iter)*lambda_0 + 1./n_iter*tp_lambda_0
-    lambda_1 = (1.-1./n_iter)*lambda_1 + 1./n_iter*tp_lambda_1
+    lambda_0 = (1.-rate)*lambda_0 + rate*tp_lambda_0
+    lambda_1 = (1.-rate)*lambda_1 + rate*tp_lambda_1
     
     flag_ratio = np.linalg.norm(lambda_1-lambda_1_old)/\
             np.linalg.norm(lambda_1_old)
