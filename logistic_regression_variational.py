@@ -11,7 +11,7 @@ import copy
 from time import time
 
 # Load Synthetic data
-file_data = open("synthetic_1.pkl","rb")
+file_data = open("adult.pkl","rb")
 data,label = pickle.load(file_data)
 file_data.close()
 

@@ -34,7 +34,7 @@ def update_global(m_0,S_0,label,data,var_local):
     # Update for lambda_0
     tmp_0 = np.zeros((n_features,1))
     for n in range(n_instances):
-        tmp_0 += (label[n]-0.5)*data[[n],:]
+        tmp_0 += (label[n]-0.5)*data[[n],:].reshape(n_features,1)
     lambda_0 = np.dot(np.linalg.inv(S_0),m_0)+tmp_0
 
     # Update for lambda_1
